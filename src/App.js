@@ -22,130 +22,89 @@ const initialFriends = [
 ];
 
 function App() {
-  const [friends, setFriends] = useState(initialFriends);
-  const [showAddFriend, setShowAddFriend] = useState(false);
-
-  console.log(friends);
-
-  function handleAddFriend( friend ) {
-    setFriends((friends) => [...friends, friend]);
-  }
-
-  function handleShowAddFriend() {
-    setShowAddFriend((show) => !show);
-  }
+  const friends = initialFriends;
   return (
     <div className="app">
       <div className="sidebar">
-        <Friend friends={friends} />
-        {showAddFriend && <FormAddFriend onAddFriend={handleAddFriend} />}
-        <Button onClick={handleShowAddFriend}>
-          {showAddFriend ? "Close" : "Add Friend"}
-        </Button>
+        <FriendList friends={friends} />
+        <FormAddFriend />
+        <Button>Add Friend</Button>
       </div>
       <FormSplitBill />
     </div>
   );
 }
 
-function Friend({ friends }) {
-  // const data = initialFriends;
+function FriendList({ friends }) {
+  return friends.map((friend) => <Friend friend={friend} key={friend.name} />);
+}
+
+function Friend({ friend }) {
   return (
-    <div>
-      {friends.map((friend) => (
-        <ul >
-          <FriendList friend={friend} />
-        </ul>
-      ))}
-    </div>
+    <>
+      <li>
+        <img src={friend.image} alt={friend.name} />
+        <h3>{friend.name}</h3>
+        {friend.balance < 0 && (
+          <p className="red">
+            You owe {friend.name} {Math.abs(friend.balance)}
+          </p>
+        )}
+
+        {friend.balance > 0 && (
+          <p className="green">
+            {friend.name} owes you {friend.balance}
+          </p>
+        )}
+
+        {friend.balance === 0 && <p>You and {friend.name} are even</p>}
+      </li>
+    </>
   );
 }
 
-function FriendList({ friend }) {
-  return (
-    <li>
-      <img src={friend.image} alt={friend.name}></img>
-      <h3>{friend.name}</h3>
-
-      {friend.balance < 0 && (
-        <p className="green">You owe ${Math.abs(friend.balance)}</p>
-      )}
-      {friend.balance > 0 && (
-        <p className="red">You owe ${Math.abs(friend.balance)}</p>
-      )}
-      {friend.balance === 0 && <p>You both are even</p>}
-    </li>
-  );
+function Button({ children }) {
+  return <button className="button">{children}</button>;
 }
-
-function FormAddFriend({ onAddFriend }) {
-  const [name, setName] = useState("");
-  const [image, setImage] = useState("https://i.pravatar.cc/48");
-
-  function handleSubmit(e) {
-    e.preventDefault();
-
-    if (!name || !image) return;
-    const id = crypto.randomUUID();
-    const newFriend = { id, name, image: `${image}?=${id}`, balance: 0 };
-    onAddFriend(newFriend);
-    console.log(newFriend);
-
-    setName("");
-    setImage("");
-  }
-
+function FormAddFriend() {
   return (
-    <form className="form-add-friend" onSubmit={handleSubmit}>
-      <label>🧑‍🤝‍🧑Friend</label>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      ></input>
+    <form className="form-add-friend">
+      <label>Friend Name</label>
+      <input type="text"></input>
 
-      <label>📷 Camera</label>
-      <input
-        type="text"
-        value={image}
-        onChange={(e) => setImage(e.target.value)}
-      ></input>
+      <label>📷Image Url</label>
+      <input type="text"></input>
 
       <Button>Add</Button>
     </form>
   );
 }
 
-function Button({ children, onClick }) {
-  return (
-    <button className="button" onClick={onClick}>
-      {children}
-    </button>
-  );
-}
-
 function FormSplitBill() {
   return (
     <form className="form-split-bill">
-      <h2>Split the bill with X</h2>
+      <h2>Split a bill with X</h2>
+
       <label>Bill Value</label>
       <input type="text"></input>
+
       <label>Your Expense</label>
       <input type="text"></input>
 
-      <label>X's Expense</label>
-      <input type="text"></input>
+      <label>X Expense</label>
+      <input type="text" disabled></input>
 
-      <label>Who is going to pay the bill</label>
+      <label>Who is paying the bill ?</label>
       <select>
-        <option user="you">You</option>
-        <option user="x">X</option>
+        <option>You</option>
+        <option>X</option>
       </select>
-      <Button>Split bill</Button>
     </form>
   );
 }
+
 export default App;
+
 // import { useState } from "react";
 
 // function App() {
